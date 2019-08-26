@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Activity;
+use Validator;
+use Carbon\Carbon;
 use App\Traits\ValidateTrait;
 use App\Contracts\Activity\ActivityContract;
 
@@ -42,23 +43,9 @@ class ActivitiesController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'start_date' => 'required',
-            'deadline' => 'required',
-            'end_date' => 'nullable|date',
-            'user_id' => 'required|exists:users,id',
-            'status_id' => 'required|exists:statuses,id',
-        ];
+        $activity = $request->all();
 
-        if (!$this->validate($request, $rules)) {
-            return response()->json(['Invalid JSON Object.'], 422);
-        }
-
-        return $request->all();
-
-        $activity = new Activity($request->all());
+        $this->validateActivity($activity);
 
         return $this->activityRepository->save($activity);
     }
@@ -83,7 +70,9 @@ class ActivitiesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $activity = new Activity($request->all());
+        $activity = $request->all();
+
+        $this->validateActivity($activity);
 
         return $this->activityRepository->update($activity, $id);
     }
@@ -97,5 +86,67 @@ class ActivitiesController extends Controller
     public function destroy($id)
     {
         return $this->activityRepository->delete($id);
+    }
+
+    /**
+     * Validate if the activity object is valid.
+     */
+    private function validateActivity($activity)
+    {
+        $now = strtotime('now');
+
+        $rules = [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
+            'start_date' => 'required|date_format:Y-m-d H:i|after:' . $now . '|before:deadline',
+            'deadline' => 'required|date_format:Y-m-d H:i|after:start_date',
+            'end_date' => 'nullable|date_format:Y-m-d H:i',
+            'user_id' => 'required|exists:users,id',
+            'status_id' => 'required|exists:statuses,id',
+        ];
+
+        $validator = Validator::make($activity, $rules);
+
+        if ($validator->fails()) {
+            response()->json($validator->errors(), 422)->send();
+            die();
+        }
+
+        if ($this->isWeekend($activity)) {
+            response()->json('You can\'t register any date in weekends.', 422)->send();
+            die();
+        }
+
+        if ($this->haveIntersections($activity)) {
+            response()->json('You already have an activity in this time range', 422)->send();
+            die();
+        }
+    }
+
+    /**
+     * Validate if any of the dates are in weekend.
+     */
+    private function isWeekend($activity)
+    {
+        $start_date = Carbon::createFromFormat('Y-m-d H:i', $activity['start_date']);
+        $deadline = Carbon::createFromFormat('Y-m-d H:i', $activity['deadline']);
+
+        if (isset($activity['end_date'])) {
+            $end_date = Carbon::createFromFormat('Y-m-d H:i', $activity['end_date']);
+
+            return $start_date->isWeekend() || $deadline->isWeekend() || $end_date->isWeekend();
+        }
+
+        return $start_date->isWeekend() || $deadline->isWeekend();
+    }
+
+    /**
+     * Validate if there is some intersection in the database.
+     */
+    private function haveIntersections($activity)
+    {
+        $intersection = $this->activityRepository->getIntersection($activity);
+
+        return sizeOf($intersection);
     }
 }
