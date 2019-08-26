@@ -21,7 +21,7 @@ interface ActivityContract
      * Save a new activity
      * @return Activity
      */
-    public function save(Activity $activity);
+    public function save($activity);
 
     /**
      * Get one activity
@@ -30,10 +30,17 @@ interface ActivityContract
     public function get($id);
 
     /**
+     * Get wheter there is intersection
+     * or wheter not
+     * @return array Activity
+     */
+    public function getIntersection($activity);
+
+    /**
      * Update one activity
      * @return boolean
      */
-    public function update(Activity $activity, $id);
+    public function update($activity, $id);
 
     /**
      * Delete one activity
