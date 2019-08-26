@@ -21,13 +21,11 @@ class Activity extends Model
 
     public function status()
     {
-        // return $this->hasOne('App\Models\Status', 'id', 'status_id');
-        return $this->hasOne('App\Models\Status');
+        return $this->belongsTo('App\Models\Status');
     }
 
     public function user()
     {
-        // return $this->belongsTo('App\Models\User', 'id', 'user_id');
         return $this->belongsTo('App\Models\User');
     }
 }
