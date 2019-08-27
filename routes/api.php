@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 Route::apiResource('/activities', 'ActivitiesController');
 
+Route::post('/activities/{id}/finish', 'ActivitiesController@finishActivity');
+
 Route::get('/status', 'StatusController@index');
 
 Route::get('/users', 'UserController@index');

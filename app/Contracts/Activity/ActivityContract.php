@@ -15,7 +15,7 @@ interface ActivityContract
      * Get all activities
      * @return array Activity
      */
-    public function getAll();
+    public function getAll($filters);
 
     /**
      * Save a new activity
@@ -47,4 +47,10 @@ interface ActivityContract
      * @return boolean
      */
     public function delete($id);
+
+    /**
+     * Update the status of one activity
+     * @return boolean
+     */
+    public function finishActivity($id, $date);
 }

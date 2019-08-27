@@ -30,9 +30,20 @@ class ActivitiesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return $this->activityRepository->getAll();
+        $rules = [
+            'initial_date' => 'nullable|required_with:final_date|date_format:Y-m-d H:i|before:final_date|',
+            'final_date'   => 'nullable|required_with:initial_date|date_format:Y-m-d H:i|after:initial_date|',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        return $this->activityRepository->getAll($request->all());
     }
 
     /**
@@ -86,6 +97,19 @@ class ActivitiesController extends Controller
     public function destroy($id)
     {
         return $this->activityRepository->delete($id);
+    }
+
+    /**
+     * Finish the scheduled activity.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function finishActivity($id)
+    {
+        $now = Carbon::now();
+
+        return $this->activityRepository->finishActivity($id, $now->format('Y-m-d H:i'));
     }
 
     /**
