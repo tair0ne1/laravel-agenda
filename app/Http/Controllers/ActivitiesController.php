@@ -120,13 +120,13 @@ class ActivitiesController extends Controller
         $now = strtotime('now');
 
         $rules = [
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'required|string|max:1000',
-            'start_date' => 'required|date_format:Y-m-d H:i|after:' . $now . '|before:deadline',
-            'deadline' => 'required|date_format:Y-m-d H:i|after:start_date',
-            'end_date' => 'nullable|date_format:Y-m-d H:i',
-            'user_id' => 'required|exists:users,id',
-            'status_id' => 'required|exists:statuses,id',
+            'start_date'  => 'required|date_format:Y-m-d H:i|after:' . $now . '|before:deadline',
+            'deadline'    => 'required|date_format:Y-m-d H:i|after:start_date',
+            'end_date'    => 'nullable|date_format:Y-m-d H:i',
+            'user_id'     => 'required|exists:users,id',
+            'status_id'   => 'required|exists:statuses,id',
         ];
 
         $validator = Validator::make($activity, $rules);
