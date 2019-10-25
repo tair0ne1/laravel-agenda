@@ -53,9 +53,7 @@ class ActivitiesController extends Controller
      */
     public function store(ActivityRequest $request)
     {
-        $activity = $request->validated();
-
-        return $this->activityRepository->save($activity);
+        return $this->activityRepository->save($request->validated());
     }
 
     /**
@@ -78,9 +76,7 @@ class ActivitiesController extends Controller
      */
     public function update(ActivityRequest $request, $id)
     {
-        $activity = $request->validated();
-
-        return $this->activityRepository->update($activity, $id);
+        return $this->activityRepository->update($request->validated(), $id);
     }
 
     /**
