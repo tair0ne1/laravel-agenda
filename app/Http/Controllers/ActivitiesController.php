@@ -6,12 +6,11 @@ use Illuminate\Http\Request;
 
 use Validator;
 use Carbon\Carbon;
-use App\Traits\ValidateTrait;
 use App\Contracts\Activity\ActivityContract;
+use App\Http\Requests\ActivityRequest;
 
 class ActivitiesController extends Controller
 {
-    use ValidateTrait;
 
     protected $activityRepository;
 
@@ -52,9 +51,9 @@ class ActivitiesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ActivityRequest $request)
     {
-        $activity = $request->all();
+        $activity = $request->validated();
 
         $this->validateActivity($activity);
 
@@ -79,9 +78,9 @@ class ActivitiesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ActivityRequest $request, $id)
     {
-        $activity = $request->all();
+        $activity = $request->validated();
 
         $this->validateActivity($activity);
 
@@ -117,25 +116,6 @@ class ActivitiesController extends Controller
      */
     private function validateActivity($activity)
     {
-        $now = strtotime('now');
-
-        $rules = [
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'start_date'  => 'required|date_format:Y-m-d H:i|after:' . $now . '|before:deadline',
-            'deadline'    => 'required|date_format:Y-m-d H:i|after:start_date',
-            'end_date'    => 'nullable|date_format:Y-m-d H:i',
-            'user_id'     => 'required|exists:users,id',
-            'status_id'   => 'required|exists:statuses,id',
-        ];
-
-        $validator = Validator::make($activity, $rules);
-
-        if ($validator->fails()) {
-            response()->json($validator->errors(), 422)->send();
-            die();
-        }
-
         if ($this->isWeekend($activity)) {
             response()->json('You can\'t register any date in weekends.', 422)->send();
             die();
