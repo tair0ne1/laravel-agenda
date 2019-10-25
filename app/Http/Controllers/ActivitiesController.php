@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Validator;
-use Carbon\Carbon;
 use App\Contracts\Activity\ActivityContract;
 use App\Http\Requests\ActivityRequest;
 use App\Http\Requests\IndexActivityRequest;
@@ -88,8 +86,6 @@ class ActivitiesController extends Controller
      */
     public function finishActivity($id)
     {
-        $now = Carbon::now();
-
-        return $this->activityRepository->finishActivity($id, $now->format('Y-m-d H:i'));
+        return $this->activityRepository->finishActivity($id);
     }
 }

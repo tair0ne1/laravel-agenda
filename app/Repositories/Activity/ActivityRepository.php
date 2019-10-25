@@ -81,13 +81,15 @@ class ActivityRepository implements ActivityContract
         return Activity::where('id', $id);
     }
 
-    public function finishActivity($id, $date)
+    public function finishActivity($id)
     {
+        $now = Carbon::now();
+        
         return Activity::where('id', $id)
             ->where('status_id', env('SCHEDULED_STATUS'))
             ->update([
                 'status_id' => env('DONE_STATUS'),
-                'end_date'  => $date
+                'end_date'  => $now->format('Y-m-d H:i')
             ]);
     }
 
