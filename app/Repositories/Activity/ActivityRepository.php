@@ -5,6 +5,8 @@ namespace App\Repositories\Activity;
 use App\Contracts\Activity\ActivityContract;
 use App\Models\Activity;
 
+use Carbon\Carbon;
+
 /**
  * Class ActivityRepository
  *
@@ -24,6 +26,10 @@ class ActivityRepository implements ActivityContract
 
     public function save($activity)
     {
+        if ($this->isWeekend($activity)) {
+            return response()->json('You can\'t register any date in weekends.', 422);
+        }
+
         return Activity::create($activity);
     }
 
@@ -50,6 +56,10 @@ class ActivityRepository implements ActivityContract
 
     public function update($activity, $id)
     {
+        if ($this->isWeekend($activity)) {
+            return response()->json('You can\'t register any date in weekends.', 422);
+        }
+
         return $this->getById($id)->update($activity);
     }
 
@@ -84,5 +94,22 @@ class ActivityRepository implements ActivityContract
         }
 
         return $query;
+    }
+
+    /**
+     * Validate if any of the dates are in weekend.
+     */
+    private function isWeekend($activity)
+    {
+        $start_date = Carbon::createFromFormat('Y-m-d H:i', $activity['start_date']);
+        $deadline = Carbon::createFromFormat('Y-m-d H:i', $activity['deadline']);
+
+        if (isset($activity['end_date'])) {
+            $end_date = Carbon::createFromFormat('Y-m-d H:i', $activity['end_date']);
+
+            return $start_date->isWeekend() || $deadline->isWeekend() || $end_date->isWeekend();
+        }
+
+        return $start_date->isWeekend() || $deadline->isWeekend();
     }
 }
