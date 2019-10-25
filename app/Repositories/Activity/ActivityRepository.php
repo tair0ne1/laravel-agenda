@@ -30,6 +30,10 @@ class ActivityRepository implements ActivityContract
             return response()->json('You can\'t register any date in weekends.', 422);
         }
 
+        if ($this->haveIntersections($activity)) {
+            return response()->json('You already have an activity in this time range', 422);
+        }
+
         return Activity::create($activity);
     }
 
@@ -60,6 +64,10 @@ class ActivityRepository implements ActivityContract
             return response()->json('You can\'t register any date in weekends.', 422);
         }
 
+        if ($this->haveIntersections($activity)) {
+            return response()->json('You already have an activity in this time range', 422);
+        }
+        
         return $this->getById($id)->update($activity);
     }
 
@@ -111,5 +119,15 @@ class ActivityRepository implements ActivityContract
         }
 
         return $start_date->isWeekend() || $deadline->isWeekend();
+    }
+
+    /**
+     * Validate if there is some intersection in the database.
+     */
+    private function haveIntersections($activity)
+    {
+        $intersection = $this->getIntersection($activity);
+
+        return sizeOf($intersection);
     }
 }
