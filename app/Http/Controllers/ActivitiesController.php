@@ -8,6 +8,7 @@ use Validator;
 use Carbon\Carbon;
 use App\Contracts\Activity\ActivityContract;
 use App\Http\Requests\ActivityRequest;
+use App\Http\Requests\IndexActivityRequest;
 
 class ActivitiesController extends Controller
 {
@@ -29,20 +30,9 @@ class ActivitiesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(IndexActivityRequest $request)
     {
-        $rules = [
-            'initial_date' => 'nullable|required_with:final_date|date_format:Y-m-d H:i|before:final_date|',
-            'final_date'   => 'nullable|required_with:initial_date|date_format:Y-m-d H:i|after:initial_date|',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        return $this->activityRepository->getAll($request->all());
+        return $this->activityRepository->getAll($request->validated());
     }
 
     /**
