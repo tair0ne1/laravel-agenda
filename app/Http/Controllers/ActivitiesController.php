@@ -88,8 +88,6 @@ class ActivitiesController extends Controller
      */
     public function finishActivity($id)
     {
-        $now = Carbon::now();
-
-        return $this->activityRepository->finishActivity($id, $now->format('Y-m-d H:i'));
+        return $this->activityRepository->finishActivity($id);
     }
 }
