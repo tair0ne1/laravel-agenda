@@ -55,8 +55,6 @@ class ActivitiesController extends Controller
     {
         $activity = $request->validated();
 
-        $this->validateActivity($activity);
-
         return $this->activityRepository->save($activity);
     }
 
@@ -81,8 +79,6 @@ class ActivitiesController extends Controller
     public function update(ActivityRequest $request, $id)
     {
         $activity = $request->validated();
-
-        $this->validateActivity($activity);
 
         return $this->activityRepository->update($activity, $id);
     }
@@ -109,26 +105,5 @@ class ActivitiesController extends Controller
         $now = Carbon::now();
 
         return $this->activityRepository->finishActivity($id, $now->format('Y-m-d H:i'));
-    }
-
-    /**
-     * Validate if the activity object is valid.
-     */
-    private function validateActivity($activity)
-    {
-        if ($this->haveIntersections($activity)) {
-            response()->json('You already have an activity in this time range', 422)->send();
-            die();
-        }
-    }
-
-    /**
-     * Validate if there is some intersection in the database.
-     */
-    private function haveIntersections($activity)
-    {
-        $intersection = $this->activityRepository->getIntersection($activity);
-
-        return sizeOf($intersection);
     }
 }
