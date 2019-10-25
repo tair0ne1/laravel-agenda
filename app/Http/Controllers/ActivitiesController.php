@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Validator;
-use Carbon\Carbon;
 use App\Contracts\Activity\ActivityContract;
 use App\Http\Requests\ActivityRequest;
 use App\Http\Requests\IndexActivityRequest;
