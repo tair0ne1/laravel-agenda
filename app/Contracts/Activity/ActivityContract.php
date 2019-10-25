@@ -52,5 +52,5 @@ interface ActivityContract
      * Update the status of one activity
      * @return boolean
      */
-    public function finishActivity($id, $date);
+    public function finishActivity($id);
 }
