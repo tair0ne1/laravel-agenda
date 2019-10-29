@@ -130,60 +130,59 @@ class ActivityTest extends TestCase
         $response->assertStatus(200);
     }
 
-    // /**
-    //  * Add activity
-    //  *
-    //  * @return void
-    //  */
-    // public function testAddOneActivityTest()
-    // {
-    //     $activity = factory(Activity::class)->make();
+    /**
+     * Add activity
+     *
+     * @return void
+     */
+    public function testAddOneActivityTest()
+    {
+        $activity = factory(Activity::class)->make();
 
-    //     $response = $this->post('/api/activities', $activity->toArray());
+        $responseStructure = [
+            'id',
+            'title',
+            'description',
+            'start_date',
+            'deadline',
+            'end_date',
+            'user_id',
+            'status_id',
+            'updated_at',
+            'created_at',
+        ];
 
-    //     $response->assertStatus(200);
+        $response = $this->post('/api/activities', $activity->toArray());
 
-    //     $responseStructure = [
-    //         'title',
-    //         'description',
-    //         'start_date',
-    //         'deadline',
-    //         'end_date',
-    //         'user_id',
-    //         'status_id',
-    //         'user' => [
-    //             'id',
-    //             'name'
-    //         ],
-    //         'status' => [
-    //             'id',
-    //             'name'
-    //         ]
-    //     ];
+        $response->assertStatus(201);
 
-    //     $response->assertJsonStructure($responseStructure);
-    // }
+        $response->assertJsonStructure($responseStructure);
 
-    // /**
-    //  * Add activity with failure.
-    //  *
-    //  * @return void
-    //  */
-    // public function testAddOneActivityWithFailuresTest()
-    // {
-    //     $responseStructure = [
-    //         'title'       => ['The title field is required.'],
-    //         'description' => ['The description field is required.'],
-    //         'start_date'  => ['The start date field is required.'],
-    //         'deadline'    => ['The deadline field is required.'],
-    //         'user_id'     => ['The user id field is required.'],
-    //         'status_id'   => ['The status id field is required.']
-    //     ];
+        $response->assertJsonFragment($activity->toArray());
+    }
 
-    //     $this->post('/api/activities')
-    //          ->assertStatus(200)
-    //          ->assertJsonStructure($responseStructure);
-    // }
+    /**
+     * Add activity with failure.
+     *
+     * @return void
+     */
+    public function testAddOneActivityWithFailuresTest()
+    {
+        $responseStructure = [
+            'title'       => ['The title field is required.'],
+            'description' => ['The description field is required.'],
+            'start_date'  => ['The start date field is required.'],
+            'deadline'    => ['The deadline field is required.'],
+            'user_id'     => ['The user id field is required.'],
+            'status_id'   => ['The status id field is required.']
+        ];
+
+        $response = $this->post('/api/activities');
+
+        $response->assertStatus(422);
+
+        $response->assertJson($responseStructure);
+    }
 
     /**
      * Get one activity
