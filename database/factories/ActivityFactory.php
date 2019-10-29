@@ -19,13 +19,14 @@ use Faker\Generator as Faker;
 
 $factory->define(Activity::class, function (Faker $faker) {
     $now = Carbon::now();
+
     return [
         'title'       => $faker->sentence(),
-        'description' => $faker->paragraphs(),
-        'start_date'  => $now->addMinutes(3),
-        'deadline'    => $now->addMinutes(30),
+        'description' => $faker->paragraphs(1, true),
+        'start_date'  => $now->addMinutes(3)->format('Y-m-d H:i'),
+        'deadline'    => $now->addMinutes(30)->format('Y-m-d H:i'),
         'end_date'    => null,
         'user_id'     => 1,
-        'status_id'   => 1
+        'status_id'   => env('DONE_STATUS')
     ];
 });
