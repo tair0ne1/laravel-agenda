@@ -164,26 +164,28 @@ class ActivityTest extends TestCase
     //     $response->assertJsonStructure($responseStructure);
     // }
 
-    // /**
-    //  * Add activity with failure.
-    //  *
-    //  * @return void
-    //  */
-    // public function testAddOneActivityWithFailuresTest()
-    // {
-    //     $responseStructure = [
-    //         'title'       => ['The title field is required.'],
-    //         'description' => ['The description field is required.'],
-    //         'start_date'  => ['The start date field is required.'],
-    //         'deadline'    => ['The deadline field is required.'],
-    //         'user_id'     => ['The user id field is required.'],
-    //         'status_id'   => ['The status id field is required.']
-    //     ];
+    /**
+     * Add activity with failure.
+     *
+     * @return void
+     */
+    public function testAddOneActivityWithFailuresTest()
+    {
+        $responseStructure = [
+            'title'       => ['The title field is required.'],
+            'description' => ['The description field is required.'],
+            'start_date'  => ['The start date field is required.'],
+            'deadline'    => ['The deadline field is required.'],
+            'user_id'     => ['The user id field is required.'],
+            'status_id'   => ['The status id field is required.']
+        ];
 
-    //     $this->post('/api/activities')
-    //          ->assertStatus(200)
-    //          ->assertJsonStructure($responseStructure);
-    // }
+        $response = $this->post('/api/activities');
+
+        $response->assertStatus(422);
+        
+        $response->assertJson($responseStructure);
+    }
 
     /**
      * Get one activity
